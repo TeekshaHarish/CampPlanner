@@ -3,28 +3,43 @@
     <h1 class="text-center">New Campground</h1>
     <!-- offset 3 to center the show element as 6 is its size so 3 spacing-->
     <div class="col-6 offset-3">
-        <form action="/campgrounds" method="POST">
+        <form action="/campgrounds" method="POST" novalidate class="needs-validation">
 
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" id="title" name="campground[title]">
+                <input class="form-control" type="text" id="title" name="campground[title]" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
             </div>
         
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
-                <input class="form-control" type="text" id="location" name="campground[location]">
+                <input class="form-control" type="text" id="location" name="campground[location]" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="image">Image URL</label>
                 <input class="form-control" type="text" id="image" name="campground[image]">
+                <!-- <div class="valid-feedback">
+                    Looks good!
+                </div> -->
             </div>
             <div class="mb-3">
                 <label class="form-label" for="price">Price</label>
-                <input class="form-control" type="number" id="price" name="campground[price]">
+                <input class="form-control" type="text" id="price" name="campground[price]" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="description">Description</label>
                 <textarea class="form-control" type="text" id="description" name="campground[description]"></textarea>
+                <!-- <div class="valid-feedback">
+                    Looks good!
+                </div> -->
             </div>
             <div class="mb-3">
                 <button class="btn btn-success">Add Campground</button>

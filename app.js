@@ -3,8 +3,13 @@ const mongoose=require('mongoose');
 const methodOverride=require('method-override');
 const path=require('path');
 const ejsMate=require('ejs-mate');
+const Joi=require('joi');
+const {campgroundSchema}=require('./schemas.js')
+const catchAsync=require('./utils/catchAsync');
+const ExpressError=require('./utils/ExpressError');
 const Campground= require('./models/campground');
 const campground = require('./models/campground');
+const { STATUS_CODES } = require('http');
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
 .then(()=>{
@@ -28,6 +33,17 @@ app.set('views',path.join(__dirname,'views'));
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
 
+const validateCampground=(req,res,next)=>{
+    //middleware format req,res,next
+    const result=campgroundSchema.validate(req.body);
+    console.log(result);
+    if(result.error){
+        throw new ExpressError(result.error,400);
+        // return res.send("ERROR");
+    }else{
+        next();
+    }
+}
 app.get('/',(req,res)=>{
     res.render('home');
 })
@@ -39,53 +55,62 @@ app.get('/',(req,res)=>{
 //     await camp.save();
 //     res.send(camp);
 // })
-app.get('/campgrounds', async(req,res)=>{
+app.get('/campgrounds', catchAsync(async(req,res)=>{
     const campgrounds= await Campground.find({});
     res.render('campgrounds/index',{campgrounds});
-})
+}));
 
 app.get('/campgrounds/new', (req,res)=>{
     res.render('campgrounds/new');
 })
 
-app.post('/campgrounds',async (req,res)=>{
+app.post('/campgrounds',validateCampground,catchAsync(async (req,res)=>{
     //parse req.body 
     // {"campground":{"title":"hvs","location":"sjs"}}
-
     const campground=await new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
-})
+}));
 
 
 
 //new route before id
-app.get('/campgrounds/:id', async(req,res)=>{
+app.get('/campgrounds/:id', catchAsync(async(req,res)=>{
     const campground=await Campground.findById(req.params.id);
     console.log(campground);
     res.render('campgrounds/show',{campground});
-})
+}));
 
-app.get('/campgrounds/:id/edit',async(req,res)=>{
+app.get('/campgrounds/:id/edit',catchAsync(async(req,res)=>{
     const campground=await Campground.findById(req.params.id);
     res.render('campgrounds/edit',{campground});
-})
+}))
 
 //method override for put patch request
 //method in qeury string _method
-app.put('/campgrounds/:id',async(req,res)=>{
+app.put('/campgrounds/:id',validateCampground,catchAsync(async(req,res)=>{
     const {id}=req.params;
     const campground=await Campground.findByIdAndUpdate(id,{...req.body.campground});
     res.redirect(`/campgrounds/${campground._id}`);
-})
+}))
 
-app.delete('/campgrounds/:id',async(req,res)=>{
+app.delete('/campgrounds/:id',catchAsync(async(req,res)=>{
     const {id}=req.params;
     await Campground.findByIdAndDelete(id);
     // res.send("Hi");
     res.redirect('/campgrounds');
-})
+}))
 
+//a 404 route when no other route is matched
+app.all('*',(req,res,next)=>{
+    next(new ExpressError("Page not found",404));
+})
+app.use((err,req,res,next)=>{
+    const {statusCode=500}=err;
+    if(!err.message) err.message="Oh No!Something Went Wrong!";
+    res.status(statusCode).render('error',{err});
+    // res.send('Oh boy something went wrong');
+})
 
 app.listen(3000,()=>{
     console.log("Serving on port 3000");
