@@ -4,7 +4,7 @@ const {places,descriptors}=require('./seedHelper');
 
 const Campground= require('../models/campground');
 
-mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
+mongoose.connect('mongodb://127.0.0.1:27017/camp-planner')
 .then(()=>{
     console.log("MONGOOSE CONNECTION OPEN!!");
 })
