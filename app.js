@@ -3,12 +3,21 @@ const mongoose=require('mongoose');
 const methodOverride=require('method-override');
 const path=require('path');
 const ejsMate=require('ejs-mate');
-const Joi=require('joi');
-const {campgroundSchema, reviewSchema}=require('./schemas.js')
-const catchAsync=require('./utils/catchAsync');
+// const Joi=require('joi');
+// const {campgroundSchema, reviewSchema}=require('./schemas.js')
+// const catchAsync=require('./utils/catchAsync');
 const ExpressError=require('./utils/ExpressError');
-const Campground= require('./models/campground');
-const Review=require('./models/review');
+// const Campground= require('./models/campground');
+// const Review=require('./models/review');
+const session=require("express-session");
+const flash=require("connect-flash");
+const passport=require("passport");
+const LocalStratergy=require("passport-local");
+const User=require("./models/user");
+
+const campgroundRoutes=require("./routes/campground.js");
+const reviewRoutes=require("./routes/reviews.js");
+const userRoutes=require("./routes/users");
 
 mongoose.connect('mongodb://127.0.0.1:27017/camp-planner')
 .then(()=>{
@@ -31,26 +40,46 @@ app.set('views',path.join(__dirname,'views'));
 
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname,'public')));
 
-const validateCampground=(req,res,next)=>{
-    //middleware format req,res,next
-    const result=campgroundSchema.validate(req.body);
-    console.log(result);
-    if(result.error){
-        throw new ExpressError(result.error,400);
-        // return res.send("ERROR");
-    }else{
-        next();
+
+const sessionConfig={
+    secret:"mysecret",
+    resave:false,
+    saveUninitialized:true,
+    cookie:{
+        httpOnly:true,
+        expires:Date.now()+1000*60*60*24*7,
+        maxAge:1000*60*60*24*7
     }
+    
 }
-const validateReview=(req,res,next)=>{
-    const result=reviewSchema.validate(req.body);
-    if(result.error){
-        throw new ExpressError(result.error,400);
-    }else{
-        next();
-    }
-}
+app.use(session(sessionConfig))
+//use session before routes to include session and cookies in all the routes
+
+app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStratergy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+//flash related after session
+app.use((req,res,next)=>{
+    // console.log(req.session);
+    res.locals.currentUser=req.user;
+    res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
+    next();
+})
+
+
+app.use('/campgrounds',campgroundRoutes);
+app.use('/campgrounds/:id/reviews',reviewRoutes);
+app.use('/',userRoutes);
+
 app.get('/',(req,res)=>{
     res.render('home');
 })
@@ -62,67 +91,8 @@ app.get('/',(req,res)=>{
 //     await camp.save();
 //     res.send(camp);
 // })
-app.get('/campgrounds', catchAsync(async(req,res)=>{
-    const campgrounds= await Campground.find({});
-    res.render('campgrounds/index',{campgrounds});
-}));
-
-app.get('/campgrounds/new', (req,res)=>{
-    res.render('campgrounds/new');
-})
-
-app.post('/campgrounds',validateCampground,catchAsync(async (req,res)=>{
-    //parse req.body 
-    // {"campground":{"title":"hvs","location":"sjs"}}
-    const campground=await new Campground(req.body.campground);
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-}));
 
 
-
-//new route before id
-app.get('/campgrounds/:id', catchAsync(async(req,res)=>{
-    const campground=await Campground.findById(req.params.id).populate('reviews');
-    console.log(campground);
-    res.render('campgrounds/show',{campground});
-}));
-
-app.get('/campgrounds/:id/edit',catchAsync(async(req,res)=>{
-    const campground=await Campground.findById(req.params.id);
-    res.render('campgrounds/edit',{campground});
-}))
-
-//method override for put patch request
-//method in qeury string _method
-app.put('/campgrounds/:id',validateCampground,catchAsync(async(req,res)=>{
-    const {id}=req.params;
-    const campground=await Campground.findByIdAndUpdate(id,{...req.body.campground});
-    res.redirect(`/campgrounds/${campground._id}`);
-}))
-
-app.delete('/campgrounds/:id',catchAsync(async(req,res)=>{
-    const {id}=req.params;
-    await Campground.findByIdAndDelete(id);
-    // res.send("Hi");
-    res.redirect('/campgrounds');
-}))
-
-app.post('/campgrounds/:id/reviews',validateReview,catchAsync(async(req,res)=>{
-    const campground=await Campground.findById(req.params.id);
-    const review=new Review(req.body.review);
-    campground.reviews.push(review);
-    await campground.save();
-    await review.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-}))
-
-app.delete('/campgrounds/:id/reviews/:reviewId',catchAsync(async(req,res)=>{
-    const{id,reviewId}=req.params;
-    await Campground.findByIdAndUpdate(id,{$pull:{reviews:reviewId}});
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/campgrounds/${id}`);
-}))
 
 //a 404 route when no other route is matched
 app.all('*',(req,res,next)=>{

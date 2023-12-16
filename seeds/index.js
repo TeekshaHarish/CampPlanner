@@ -28,6 +28,7 @@ const seedDB =async ()=>{
         const camp=new Campground({
             location:`${cities[random1000].city} ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
+            author:"653e8584f73f50bcad2acbe1",
             image:'https://images.unsplash.com/photo-1418985991508-e47386d96a71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHw0ODQzNTF8fHx8fHx8MTY4NzM3NjY5OQ&ixlib=rb-4.0.3&q=80&w=1080',
             description:"Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi neque placeat quaerat, atque dolorum ullam soluta beatae. Dolorum ex, nesciunt inventore, sequi odit recusandae, similique quibusdam laudantium quidem distinctio repellat",
             price: price

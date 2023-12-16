@@ -9,6 +9,10 @@ const CampgroundSchema= new Schema({
     image:String,
     description:String,
     location:String,
+    author:{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    },
     
     //one to many relationship
     reviews:[
