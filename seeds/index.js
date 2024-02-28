@@ -4,7 +4,13 @@ const {places,descriptors}=require('./seedHelper');
 
 const Campground= require('../models/campground');
 
-mongoose.connect('mongodb://127.0.0.1:27017/camp-planner')
+if(process.env.NODE_ENV !=='production'){
+    require('dotenv').config();
+    //adds env variables to process.env
+}
+
+const dbUrl=process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/camp-planner';
+mongoose.connect(dbUrl)
 .then(()=>{
     console.log("MONGOOSE CONNECTION OPEN!!");
 })
@@ -22,13 +28,13 @@ const seedDB =async ()=>{
     //deletes all campgrounds
     
     for(let i=0;i<200;i++){
-        const random1000=Math.floor(Math.random()*1000);
+        const random1000=Math.floor(Math.random()*(cities.length-1));
         const price=Math.floor(Math.random()*20)+10;
 
         const camp=new Campground({
             location:`${cities[random1000].city} ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
-            author:"653e8584f73f50bcad2acbe1",
+            author:"65dfbbf566e5c301b8e4d128",
             images:[
                 {
                     url: 'https://res.cloudinary.com/dtyp1ijei/image/upload/v1708946244/CampPlanner/drwqvezkigoqqjownbx9.jpg',        
