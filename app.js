@@ -28,7 +28,7 @@ const MongoStore = require('connect-mongo');
 
 // 'mongodb://127.0.0.1:27017/camp-planner'
 // process.env.MONGO_URL
-const dbUrl='mongodb://127.0.0.1:27017/camp-planner';
+const dbUrl=process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/camp-planner';
 mongoose.connect(dbUrl)
 .then(()=>{
     console.log("MONGOOSE CONNECTION OPEN!!");
@@ -63,6 +63,7 @@ const store = MongoStore.create({
     }
 });
 
+const secret =process.env.SECRET;
 const sessionConfig={
     store,
     name:"session", //changing name from deafault connect.sid
