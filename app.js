@@ -1,3 +1,8 @@
+if(process.env.NODE_ENV !=='production'){
+    require('dotenv').config();
+    //adds env variables to process.env
+}
+
 const express=require('express');
 const mongoose=require('mongoose');
 const methodOverride=require('method-override');
@@ -18,8 +23,13 @@ const User=require("./models/user");
 const campgroundRoutes=require("./routes/campground.js");
 const reviewRoutes=require("./routes/reviews.js");
 const userRoutes=require("./routes/users");
+const mongoSanitize=require("express-mongo-sanitize");
+const MongoStore = require('connect-mongo');
 
-mongoose.connect('mongodb://127.0.0.1:27017/camp-planner')
+// 'mongodb://127.0.0.1:27017/camp-planner'
+// process.env.MONGO_URL
+const dbUrl='mongodb://127.0.0.1:27017/camp-planner';
+mongoose.connect(dbUrl)
 .then(()=>{
     console.log("MONGOOSE CONNECTION OPEN!!");
 })
@@ -42,13 +52,26 @@ app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname,'public')));
 
+//prevents Mongo Injection ,removes all $ : etc
+app.use(mongoSanitize());
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60, //update after what time
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
 
 const sessionConfig={
+    store,
+    name:"session", //changing name from deafault connect.sid
     secret:"mysecret",
     resave:false,
     saveUninitialized:true,
     cookie:{
         httpOnly:true,
+        // secure:true, //for https requests only
         expires:Date.now()+1000*60*60*24*7,
         maxAge:1000*60*60*24*7
     }

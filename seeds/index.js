@@ -21,7 +21,7 @@ const seedDB =async ()=>{
     await Campground.deleteMany({});
     //deletes all campgrounds
     
-    for(let i=0;i<50;i++){
+    for(let i=0;i<200;i++){
         const random1000=Math.floor(Math.random()*1000);
         const price=Math.floor(Math.random()*20)+10;
 
@@ -29,7 +29,23 @@ const seedDB =async ()=>{
             location:`${cities[random1000].city} ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             author:"653e8584f73f50bcad2acbe1",
-            image:'https://images.unsplash.com/photo-1418985991508-e47386d96a71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHw0ODQzNTF8fHx8fHx8MTY4NzM3NjY5OQ&ixlib=rb-4.0.3&q=80&w=1080',
+            images:[
+                {
+                    url: 'https://res.cloudinary.com/dtyp1ijei/image/upload/v1708946244/CampPlanner/drwqvezkigoqqjownbx9.jpg',        
+                    filename: 'CampPlanner/drwqvezkigoqqjownbx9'
+                  },
+                {
+                  url: 'https://res.cloudinary.com/dtyp1ijei/image/upload/v1708946245/CampPlanner/e7awso4cowgo0nfzzcjz.jpg',        
+                  filename: 'CampPlanner/e7awso4cowgo0nfzzcjz'
+                }
+              ],
+              geometry:{
+                type:'Point',
+                coordinates:[
+                    cities[random1000].longitude,
+                    cities[random1000].latitude
+                ]
+              },
             description:"Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi neque placeat quaerat, atque dolorum ullam soluta beatae. Dolorum ex, nesciunt inventore, sequi odit recusandae, similique quibusdam laudantium quidem distinctio repellat",
             price: price
         })

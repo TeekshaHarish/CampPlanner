@@ -2,8 +2,8 @@
 <div class="row">
     <h1 class="text-center">New Campground</h1>
     <!-- offset 3 to center the show element as 6 is its size so 3 spacing-->
-    <div class="col-6 offset-3">
-        <form action="/campgrounds" method="POST" novalidate class="needs-validation">
+    <div class="col-md-6 offset-md-3">
+        <form action="/campgrounds" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
 
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
@@ -21,12 +21,24 @@
                 </div>
             </div>
             <div class="mb-3">
+                <label for="formFileMultiple" class="form-label">Multiple files input example</label>
+                <input class="form-control" type="file" name="image" id="formFileMultiple" multiple>
+              </div>
+            <!-- <div class="mb-3 form-file">
+                <input class="form-file-input" type="file" name="image" id="image" multiple>
+                <label for="image" class="form-file-label">
+                    <span class="form-file-text">Choose file..</span>
+                    <span class="form-file-button">Browse</span>
+                </label>
+              </div> -->
+            <!-- <input type="file" name="image" multiple> -->
+            <!-- <div class="mb-3">
                 <label class="form-label" for="image">Image URL</label>
                 <input class="form-control" type="text" id="image" name="campground[image]">
-                <!-- <div class="valid-feedback">
+                <div class="valid-feedback">
                     Looks good!
-                </div> -->
-            </div>
+                </div>
+            </div> -->
             <div class="mb-3">
                 <label class="form-label" for="price">Price</label>
                 <input class="form-control" type="text" id="price" name="campground[price]" required>

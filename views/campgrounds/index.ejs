@@ -1,24 +1,37 @@
 <% layout('layouts/boilerplate') %>
-
-<h1>All Campgrounds</h1>
-<a href="/campgrounds/new">New campground</a>
+<div id="map" class="cluster-map"></div>
+<div class="container w-75">
+<h1 class="text-center my-3">All Campgrounds</h1>
+<!-- <a href="/campgrounds/new">New campground</a> -->
 
 <% for (let campground of campgrounds){ %>
     <div class="card mb-3">
         <div class="row">
             <div class="col-md-4">
-                <img class="img-fluid" src="<%=campground.image %>" alt="">
+                <% if(campground.images.length>0){ %>
+                <img class="img-fluid index-img" src="<%=campground.images[0].url %>" alt="">
+                <% }else{ %>
+                    <img class="img-fluid index-img" src="https://res.cloudinary.com/dtyp1ijei/image/upload/v1709067653/CampPlanner/bd7a92vnsn4divpn3r78.jpg" alt="">
+                <% } %>
             </div>
-            <div class="col-md-8">
-                <div class="card-body">
+            <div class="col-md-8 mb-3">
+                <div class="card-body pb-1">
                     <h5 class="card-title"><%= campground.title %></h5>
-                    <p class="card-text"><%=campground.description%></p>
-                    <p class="card-text">
+                    <p class="card-text mb-0"><%=campground.description%></p>
+                    <p class="card-text mt-0 mb-2">
                         <small class="text-muted"> <%=campground.location%> </small>
                     </p>
-                    <a href="/campgrounds/<%=campground._id %>" class="btn btn-primary">View <%= campground.title %></a>
+                    <a href="/campgrounds/<%=campground._id %>" class="btn btn-primary ">View <%= campground.title %></a>
                 </div>
             </div>
         </div>
     </div>
 <% } %>
+</div>
+
+<script>
+    const mapToken='<%=process.env.MAPBOX_TOKEN %>';
+    const campgrounds={features:<%-JSON.stringify(campgrounds)%>};
+    console.log(campgrounds);
+</script>
+<script src="/javascripts/clusterMap.js"></script>
