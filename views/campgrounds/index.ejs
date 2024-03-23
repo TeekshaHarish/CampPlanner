@@ -14,11 +14,11 @@
                     <img class="img-fluid index-img" src="https://res.cloudinary.com/dtyp1ijei/image/upload/v1709067653/CampPlanner/bd7a92vnsn4divpn3r78.jpg" alt="">
                 <% } %>
             </div>
-            <div class="col-md-8 mb-3">
-                <div class="card-body pb-1">
+            <div class="col-md-8">
+                <div class="card-body py-2">
                     <h5 class="card-title"><%= campground.title %></h5>
                     <p class="card-text mb-0"><%=campground.description%></p>
-                    <p class="card-text mt-0 mb-2">
+                    <p class="card-text mt-0 mb-1">
                         <small class="text-muted"> <%=campground.location%> </small>
                     </p>
                     <a href="/campgrounds/<%=campground._id %>" class="btn btn-primary ">View <%= campground.title %></a>

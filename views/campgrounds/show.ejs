@@ -1,7 +1,8 @@
 <% layout('layouts/boilerplate') %>
 <link rel="stylesheet" href="/stylesheets/stars.css">
-<div class="row mb-3">
-    <div class="col-md-6">
+<div class="row mb-1">
+    <h3 class="text-center mb-4"><%= campground.title  %></h3>
+    <div class="col-md-6 mb-4">
         <div class="card">
             <!-- <img src="<%=campground.image%>" class="card-img-top" alt="image"> -->
             <!-- <% for(let img of campground.images){ %>
@@ -49,15 +50,15 @@
         
     </div>
     <div class="col-md-6">
-        <div id='map' class="map"></div>
+        <div id='map' class="map mb-3"></div>
         <% if(currentUser){ %>
-        <h2>Leave a Review</h2>
+        <h2 class="mt-3">Leave a Review</h2>
         <form action="/campgrounds/<%=campground._id %>/reviews" method="POST" class="mb-3 needs-validation" novalidate>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label class="form-label" for="rating">Rating:</label>
                 <!-- <input type="range" class="form-range" min="1" max="5" name="review[rating]" id="rating"> -->
                 
-                <div class="mb-3">
+                <div class="mb-1">
 
                 
                 <fieldset class="starability-basic">
